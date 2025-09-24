@@ -13,16 +13,16 @@ return new class extends Migration
     {
         Schema::create('shuttle_bookings', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('shuttle_route_id')->constrained()->cascadeOnDelete();
-            $table->date('travel_date');
-            $table->enum('type', ['pulang', 'kembali']); // shuttle pulang atau shuttle kembali
+            $table->foreignId('user_id')->unique()->constrained()->cascadeOnDelete();
+            $table->foreignId('shuttle_route_id')->unique()->constrained()->cascadeOnDelete();
+            $table->date('travel_date')->unique();
+            $table->enum('type', ['pulang', 'kembali'])->unique(); // shuttle pulang atau shuttle kembali
             $table->text('notes')->nullable();
             $table->enum('status', ['confirmed', 'cancelled'])->default('confirmed');
             $table->timestamp('booking_deadline')->nullable(); // deadline pemesanan
             $table->timestamps();
             
-            $table->unique(['user_id', 'shuttle_route_id', 'travel_date', 'type']);
+            // $table->unique(['user_id', 'shuttle_route_id', 'travel_date', 'type']);
         });
     }
 
