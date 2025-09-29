@@ -7,13 +7,36 @@ use App\Models\ShuttleRoute;
 use Livewire\Component;
 use Carbon\Carbon;
 
-class ShuttleBooking extends Component
+class CreateShuttleBooking extends Component
 {
     public $shuttleType = '';
     public $selectedRoute = null;
     public $bookingDate = '';
     public $notes = '';
     public $isSubmitting = false;
+    public $bookingClosed = false;
+    public $userBookings;
+
+    public function mount()
+    {
+        $this->checkBookingClosed();
+        $this->loadUserBookings();
+    }
+
+    public function checkBookingClosed()
+    {
+        // Booking is closed if today is Wednesday after 17:00 for Friday bookings
+        $now = Carbon::now();
+
+        // If it's Friday, check if booking deadline has passed (Wednesday 17:00)
+        if ($now->isFriday()) {
+            $wednesday = Carbon::parse('last wednesday');
+            $deadline = $wednesday->setTime(17, 0, 0);
+            $this->bookingClosed = $now->isAfter($deadline);
+        } else {
+            $this->bookingClosed = false;
+        }
+    }
 
     protected $rules = [
         'shuttleType' => 'required|in:pulang,kembali',
@@ -51,8 +74,8 @@ class ShuttleBooking extends Component
 
             // Check if user already has a booking for this date and type
             $existingBooking = ShuttleBooking::where('user_id', auth()->id())
-                ->where('shuttle_type', $this->shuttleType)
-                ->whereDate('booking_date', $this->bookingDate)
+                ->where('type', $this->shuttleType)
+                ->whereDate('travel_date', $this->bookingDate)
                 ->where('status', '!=', 'cancelled')
                 ->first();
 
@@ -65,16 +88,19 @@ class ShuttleBooking extends Component
             ShuttleBooking::create([
                 'user_id' => auth()->id(),
                 'shuttle_route_id' => $this->selectedRoute,
-                'shuttle_type' => $this->shuttleType,
-                'booking_date' => $this->bookingDate,
+                'travel_date' => $this->bookingDate,
+                'type' => $this->shuttleType,
                 'notes' => $this->notes,
-                'status' => 'pending',
+                'status' => 'confirmed',
             ]);
 
             // Reset form
             $this->reset(['shuttleType', 'selectedRoute', 'bookingDate', 'notes']);
 
             session()->flash('message', 'Pemesanan shuttle berhasil dibuat!');
+
+            // Reload user bookings
+            $this->loadUserBookings();
 
         } catch (\Exception $e) {
             session()->flash('error', 'Terjadi kesalahan saat membuat pemesanan. Silakan coba lagi.');
@@ -85,12 +111,7 @@ class ShuttleBooking extends Component
 
     public function getAvailableRoutesProperty()
     {
-        if (!$this->shuttleType) {
-            return collect();
-        }
-
-        return ShuttleRoute::where('type', $this->shuttleType)
-            ->where('is_active', true)
+        return ShuttleRoute::where('is_active', true)
             ->orderBy('destination')
             ->get();
     }
@@ -102,7 +123,8 @@ class ShuttleBooking extends Component
 
         // If it's Friday, check if booking deadline has passed (Wednesday 17:00)
         if ($now->isFriday()) {
-            $deadline = Carbon::parse('this wednesday 17:00');
+            $wednesday = Carbon::parse('last wednesday');
+            $deadline = $wednesday->setTime(17, 0, 0);
             return $now->isAfter($deadline);
         }
 
@@ -120,6 +142,15 @@ class ShuttleBooking extends Component
         }
 
         return false;
+    }
+
+    public function loadUserBookings()
+    {
+        $this->userBookings = ShuttleBooking::where('user_id', auth()->id())
+            ->with('shuttleRoute')
+            ->orderBy('created_at', 'desc')
+            ->take(5)
+            ->get();
     }
 
     public function render()

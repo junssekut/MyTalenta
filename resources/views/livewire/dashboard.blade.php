@@ -168,6 +168,25 @@
                     Create</h3>
                 <p class="text-gray-600 text-xs relative z-10">Report</p>
             </a>
+
+            <!-- Facility Damage Report -->
+            <a href="{{ route('reports.facility') }}"
+                class="group bg-white rounded-2xl shadow-lg border border-gray-100 p-8 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden relative">
+                <div
+                    class="absolute inset-0 bg-gradient-to-br from-red-50 to-pink-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                </div>
+                <div
+                    class="w-14 h-14 bg-gradient-to-br from-red-500 to-red-600 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-lg relative z-10">
+                    <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                    </svg>
+                </div>
+                <h3
+                    class="font-bold text-gray-900 text-sm mb-1 relative z-10 group-hover:text-red-600 transition-colors">
+                    Report</h3>
+                <p class="text-gray-600 text-xs relative z-10">Damage</p>
+            </a>
         </div>
 
         <!-- Recent Activity -->

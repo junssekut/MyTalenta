@@ -5,8 +5,8 @@ use App\Livewire\Booking\CreateRoomBooking;
 use App\Livewire\Booking\DormitoryRoomBooking;
 use App\Livewire\Booking\CreateFacilityBooking;
 use App\Livewire\Dashboard\RumahTalenta;
-use App\Livewire\Reports\CreateReport;
-use App\Livewire\Shuttle\ShuttleBooking;
+use App\Livewire\Reports\CreateFacilityReport;
+use App\Livewire\Shuttle\CreateShuttleBooking;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
@@ -37,12 +37,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('booking.facility');
     
     // Shuttle booking
-    Route::view('/shuttle/booking', 'shuttle.booking')
-        ->name('shuttle.booking');
-    
-    // Reports
+    Route::get('/shuttle/booking', CreateShuttleBooking::class)
+        ->middleware(['role.layout'])
+        ->name('shuttle.booking');    // Reports
     Route::view('/reports/create', 'reports.create')
         ->name('reports.create');
+    Route::get('/reports/facility', CreateFacilityReport::class)
+        ->name('reports.facility');
 });
 
 // Admin routes

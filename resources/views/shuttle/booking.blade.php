@@ -1,4 +1,4 @@
-@extends(auth()->user()->role->name === 'student' ? 'layouts.mobile' : 'layouts.sidebar')
+@extends('layouts.mobile')
 
 @section('title', 'Pemesanan Shuttle - MyTalenta')
 

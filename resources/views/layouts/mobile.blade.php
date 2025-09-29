@@ -42,7 +42,8 @@
                     </a>
                     <a href="{{ route('rumah-talenta') }}"
                         class="flex items-center space-x-2 text-gray-700 hover:text-emerald-600 px-3 py-2 text-sm font-medium transition-all duration-200 {{ request()->routeIs('rumah-talenta*') ? 'text-emerald-700 bg-gradient-to-r from-emerald-50 to-green-50 border border-emerald-200 rounded-lg shadow-sm' : '' }}">
-                        <svg class="w-4 h-4 {{ request()->routeIs('rumah-talenta*') ? 'text-emerald-600' : 'text-gray-500' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-4 h-4 {{ request()->routeIs('rumah-talenta*') ? 'text-emerald-600' : 'text-gray-500' }}"
+                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                         </svg>
@@ -51,6 +52,15 @@
                     <a href="{{ route('booking.room') }}"
                         class="text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors {{ request()->routeIs('booking*') ? 'text-blue-600' : '' }}">
                         Bookings
+                    </a>
+                    <a href="{{ route('shuttle.booking') }}"
+                        class="flex items-center space-x-2 text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-all duration-200 {{ request()->routeIs('shuttle*') ? 'text-blue-600 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg shadow-sm' : '' }}">
+                        <svg class="w-4 h-4 {{ request()->routeIs('shuttle*') ? 'text-blue-600' : 'text-gray-500' }}"
+                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                        </svg>
+                        <span>Shuttle</span>
                     </a>
                 </div>
 
