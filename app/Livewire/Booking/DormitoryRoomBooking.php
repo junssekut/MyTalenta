@@ -174,6 +174,8 @@ class DormitoryRoomBooking extends Component
         $this->loadUserBookings();
 
         session()->flash('message', 'Peminjaman ruangan berhasil diajukan! Silakan tunggu konfirmasi dari Core Team PIC ruangan.');
+        
+        return redirect()->route('dashboard')->with('success', 'Peminjaman ruangan berhasil diajukan! Silakan tunggu konfirmasi dari Core Team PIC ruangan.');
     }
 
     public function render()

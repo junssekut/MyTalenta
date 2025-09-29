@@ -46,9 +46,13 @@ class CreateRoomBooking extends Component
     
     public function updatedParticipantSearch()
     {
-        if (strlen($this->participant_search) >= 2) {
+        if (strlen($this->participant_search) >= 1) {
             $this->available_participants = User::where('name', 'like', '%' . $this->participant_search . '%')
                 ->where('id', '!=', Auth::id())
+                ->whereHas('role', function ($query) {
+                    $query->where('name', 'student');
+                })
+                ->with(['role', 'batch.program'])
                 ->limit(10)
                 ->get();
         } else {
@@ -91,8 +95,8 @@ class CreateRoomBooking extends Component
         ]);
         
         session()->flash('success', 'Permintaan peminjaman ruangan berhasil diajukan!');
-        $this->reset();
-        $this->booking_date = today()->format('Y-m-d');
+        
+        return redirect()->route('dashboard')->with('success', 'Permintaan peminjaman ruangan berhasil diajukan!');
     }
 
     public function render()
@@ -101,7 +105,9 @@ class CreateRoomBooking extends Component
             ->where('is_active', true)
             ->get();
             
-        $selected_participants = User::whereIn('id', $this->participants)->get();
+        $selected_participants = User::whereIn('id', $this->participants)
+            ->with(['role', 'batch.program'])
+            ->get();
 
         return view('livewire.booking.create-room-booking', [
             'rooms' => $rooms,

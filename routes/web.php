@@ -4,7 +4,6 @@ use App\Livewire\Attendance\AttendanceMachine;
 use App\Livewire\Booking\CreateRoomBooking;
 use App\Livewire\Booking\DormitoryRoomBooking;
 use App\Livewire\Booking\CreateFacilityBooking;
-use App\Livewire\Dashboard\LearningInstitute;
 use App\Livewire\Dashboard\RumahTalenta;
 use App\Livewire\Reports\CreateReport;
 use App\Livewire\Shuttle\ShuttleBooking;
@@ -24,27 +23,25 @@ Route::view('dashboard', 'dashboard')
 
 Route::middleware(['auth', 'verified'])->group(function () {
     // Dashboard modules
-    Route::get('/learning-institute', LearningInstitute::class)
-        ->name('learning-institute');
     Route::get('/rumah-talenta', RumahTalenta::class)
         ->name('rumah-talenta');
     
     // Booking routes
-    Route::get('/booking/room', CreateRoomBooking::class)
+    Route::view('/booking/room', 'booking.room')
         ->name('booking.room');
-    Route::get('/booking/dormitory-room', DormitoryRoomBooking::class)
+    Route::view('/booking/dormitory-room', 'booking.dormitory-room')
         ->name('booking.dormitory-room');
     
     // Facility booking
-    Route::get('/booking/facility', CreateFacilityBooking::class)
+    Route::view('/booking/facility', 'booking.facility')
         ->name('booking.facility');
     
     // Shuttle booking
-    Route::get('/shuttle/booking', ShuttleBooking::class)
+    Route::view('/shuttle/booking', 'shuttle.booking')
         ->name('shuttle.booking');
     
     // Reports
-    Route::get('/reports/create', CreateReport::class)
+    Route::view('/reports/create', 'reports.create')
         ->name('reports.create');
 });
 
