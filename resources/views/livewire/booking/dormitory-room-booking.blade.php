@@ -7,8 +7,8 @@
                     <h1 class="text-2xl font-bold text-gray-900">Peminjaman Ruangan Asrama</h1>
                     <p class="text-gray-600 mt-1">Formulir pengajuan peminjaman ruangan di Rumah Talenta BCA</p>
                 </div>
-                <a href="{{ route('dashboard.rumah-talenta') }}" 
-                   class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors">
+                <a href="{{ route('rumah-talenta') }}"
+                    class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors">
                     Kembali
                 </a>
             </div>
@@ -26,33 +26,33 @@
             <!-- Pilih Ruangan -->
             <div class="bg-white rounded-lg shadow p-6">
                 <h2 class="text-xl font-semibold text-gray-900 mb-4">Pilih Ruangan</h2>
-                
+
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    @foreach($availableRooms as $room)
-                    <label class="relative cursor-pointer">
-                        <input type="radio" 
-                               wire:model.live="roomId" 
-                               value="{{ $room->id }}" 
-                               class="sr-only">
-                        <div class="border rounded-lg p-4 transition-all
+                    @foreach ($availableRooms as $room)
+                        <label class="relative cursor-pointer">
+                            <input type="radio" wire:model.live="roomId" value="{{ $room->id }}" class="sr-only">
+                            <div
+                                class="border rounded-lg p-4 transition-all
                             {{ $roomId == $room->id ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300' }}">
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <h3 class="font-semibold text-gray-900">{{ $room->name }}</h3>
-                                    <p class="text-sm text-gray-600">{{ $room->location }}</p>
-                                    <p class="text-xs text-gray-500">Kapasitas: {{ $room->capacity }} orang</p>
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h3 class="font-semibold text-gray-900">{{ $room->name }}</h3>
+                                        <p class="text-sm text-gray-600">{{ $room->location }}</p>
+                                        <p class="text-xs text-gray-500">Kapasitas: {{ $room->capacity }} orang</p>
+                                    </div>
+                                    @if ($roomId == $room->id)
+                                        <svg class="w-6 h-6 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd"
+                                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                                clip-rule="evenodd" />
+                                        </svg>
+                                    @endif
                                 </div>
-                                @if($roomId == $room->id)
-                                    <svg class="w-6 h-6 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                                    </svg>
-                                @endif
                             </div>
-                        </div>
-                    </label>
+                        </label>
                     @endforeach
                 </div>
-                
+
                 @error('roomId')
                     <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                 @enderror
@@ -61,18 +61,15 @@
             <!-- Detail Peminjaman -->
             <div class="bg-white rounded-lg shadow p-6">
                 <h2 class="text-xl font-semibold text-gray-900 mb-4">Detail Peminjaman</h2>
-                
+
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <!-- Tanggal -->
                     <div>
                         <label for="bookingDate" class="block text-sm font-medium text-gray-700 mb-2">
                             Tanggal Peminjaman
                         </label>
-                        <input type="date" 
-                               id="bookingDate"
-                               wire:model.live="bookingDate"
-                               min="{{ date('Y-m-d') }}"
-                               class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                        <input type="date" id="bookingDate" wire:model.live="bookingDate" min="{{ date('Y-m-d') }}"
+                            class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500">
                         @error('bookingDate')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                         @enderror
@@ -83,11 +80,8 @@
                         <label for="participantCount" class="block text-sm font-medium text-gray-700 mb-2">
                             Jumlah Peserta
                         </label>
-                        <input type="number" 
-                               id="participantCount"
-                               wire:model="participantCount"
-                               min="1"
-                               class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                        <input type="number" id="participantCount" wire:model="participantCount" min="1"
+                            class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500">
                         @error('participantCount')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                         @enderror
@@ -95,34 +89,36 @@
                 </div>
 
                 <!-- Time Slots -->
-                @if($roomId && $bookingDate)
-                <div class="mt-6">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">
-                        Pilih Slot Waktu (2 jam per slot)
-                    </label>
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-                        @foreach($availableTimeSlots as $slot)
-                        <label class="relative cursor-pointer">
-                            <input type="radio" 
-                                   wire:model="selectedTimeSlot" 
-                                   value="{{ $slot['start'] }}"
-                                   class="sr-only"
-                                   {{ $slot['available'] ? '' : 'disabled' }}>
-                            <div class="border rounded-lg p-3 text-center transition-all
-                                {{ !$slot['available'] ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 
-                                   ($selectedTimeSlot == $slot['start'] ? 'border-blue-500 bg-blue-50 text-blue-700' : 'border-gray-200 hover:border-gray-300') }}">
-                                <div class="text-sm font-medium">{{ $slot['start'] }} - {{ $slot['end'] }}</div>
-                                @if(!$slot['available'])
-                                    <div class="text-xs text-red-500 mt-1">Terpakai</div>
-                                @endif
-                            </div>
+                @if ($roomId && $bookingDate)
+                    <div class="mt-6">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Pilih Slot Waktu (2 jam per slot)
                         </label>
-                        @endforeach
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                            @foreach ($availableTimeSlots as $slot)
+                                <label class="relative cursor-pointer">
+                                    <input type="radio" wire:model="selectedTimeSlot" value="{{ $slot['start'] }}"
+                                        class="sr-only" {{ $slot['available'] ? '' : 'disabled' }}>
+                                    <div
+                                        class="border rounded-lg p-3 text-center transition-all
+                                {{ !$slot['available']
+                                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                                    : ($selectedTimeSlot == $slot['start']
+                                        ? 'border-blue-500 bg-blue-50 text-blue-700'
+                                        : 'border-gray-200 hover:border-gray-300') }}">
+                                        <div class="text-sm font-medium">{{ $slot['start'] }} - {{ $slot['end'] }}
+                                        </div>
+                                        @if (!$slot['available'])
+                                            <div class="text-xs text-red-500 mt-1">Terpakai</div>
+                                        @endif
+                                    </div>
+                                </label>
+                            @endforeach
+                        </div>
+                        @error('selectedTimeSlot')
+                            <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
                     </div>
-                    @error('selectedTimeSlot')
-                        <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
-                    @enderror
-                </div>
                 @endif
 
                 <!-- Alasan Peminjaman -->
@@ -130,11 +126,9 @@
                     <label for="purpose" class="block text-sm font-medium text-gray-700 mb-2">
                         Alasan Peminjaman
                     </label>
-                    <textarea id="purpose"
-                              wire:model="purpose"
-                              rows="3"
-                              placeholder="Jelaskan tujuan dan kegiatan yang akan dilakukan..."
-                              class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500"></textarea>
+                    <textarea id="purpose" wire:model="purpose" rows="3"
+                        placeholder="Jelaskan tujuan dan kegiatan yang akan dilakukan..."
+                        class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500"></textarea>
                     @error('purpose')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
@@ -149,9 +143,8 @@
                         <p>• Konfirmasi akan dikirim melalui notifikasi</p>
                         <p>• Slot waktu hanya berlaku untuk durasi 2 jam</p>
                     </div>
-                    <button type="submit" 
-                            wire:loading.attr="disabled"
-                            class="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white px-6 py-3 rounded-lg font-medium transition-colors">
+                    <button type="submit" wire:loading.attr="disabled"
+                        class="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white px-6 py-3 rounded-lg font-medium transition-colors">
                         <span wire:loading.remove>Ajukan Peminjaman</span>
                         <span wire:loading>Memproses...</span>
                     </button>
@@ -160,35 +153,41 @@
         </form>
 
         <!-- Booking History -->
-        @if($userBookings->count() > 0)
-        <div class="mt-8 bg-white rounded-lg shadow">
-            <div class="px-6 py-4 border-b border-gray-200">
-                <h3 class="text-lg font-semibold text-gray-900">Riwayat Peminjaman Anda</h3>
-            </div>
-            <div class="divide-y divide-gray-200">
-                @foreach($userBookings as $booking)
-                <div class="p-6">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <h4 class="font-semibold text-gray-900">{{ $booking->room->name }}</h4>
-                            <p class="text-sm text-gray-600">{{ $booking->purpose }}</p>
-                            <p class="text-xs text-gray-500">
-                                {{ $booking->start_time->format('d M Y, H:i') }} - {{ $booking->end_time->format('H:i') }}
-                            </p>
-                        </div>
-                        <div class="text-right">
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                                {{ $booking->status === 'approved' ? 'bg-green-100 text-green-800' : 
-                                   ($booking->status === 'pending' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800') }}">
-                                {{ ucfirst($booking->status) }}
-                            </span>
-                            <p class="text-xs text-gray-500 mt-1">{{ $booking->created_at->diffForHumans() }}</p>
-                        </div>
-                    </div>
+        @if ($userBookings->count() > 0)
+            <div class="mt-8 bg-white rounded-lg shadow">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h3 class="text-lg font-semibold text-gray-900">Riwayat Peminjaman Anda</h3>
                 </div>
-                @endforeach
+                <div class="divide-y divide-gray-200">
+                    @foreach ($userBookings as $booking)
+                        <div class="p-6">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h4 class="font-semibold text-gray-900">{{ $booking->room->name }}</h4>
+                                    <p class="text-sm text-gray-600">{{ $booking->purpose }}</p>
+                                    <p class="text-xs text-gray-500">
+                                        {{ $booking->start_time->format('d M Y, H:i') }} -
+                                        {{ $booking->end_time->format('H:i') }}
+                                    </p>
+                                </div>
+                                <div class="text-right">
+                                    <span
+                                        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                {{ $booking->status === 'approved'
+                                    ? 'bg-green-100 text-green-800'
+                                    : ($booking->status === 'pending'
+                                        ? 'bg-yellow-100 text-yellow-800'
+                                        : 'bg-red-100 text-red-800') }}">
+                                        {{ ucfirst($booking->status) }}
+                                    </span>
+                                    <p class="text-xs text-gray-500 mt-1">{{ $booking->created_at->diffForHumans() }}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
             </div>
-        </div>
         @endif
     </div>
 </div>

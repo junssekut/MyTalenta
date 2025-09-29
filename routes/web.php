@@ -48,6 +48,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('reports.create');
 });
 
+// Admin routes
+Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/users', \App\Livewire\Admin\Users::class)->name('users');
+    Route::get('/bookings', \App\Livewire\Admin\Bookings::class)->name('bookings');
+    Route::get('/reports', \App\Livewire\Admin\Reports::class)->name('reports');
+    Route::get('/settings', \App\Livewire\Admin\Settings::class)->name('settings');
+});
+
 Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', 'settings/profile');
 
