@@ -18,10 +18,12 @@
             <div class="text-center mb-8">
                 <div
                     class="w-20 h-20 bg-white bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4 border-2 border-white border-opacity-30">
-                    <span class="text-white font-bold text-xl">{{ auth()->user()->initials() }}</span>
+                    <span
+                        class="text-white font-bold text-xl">{{ auth()->check() && is_object(auth()->user()) ? auth()->user()->initials() : 'U' }}</span>
                 </div>
                 <h1 class="text-2xl font-bold mb-2 text-gray-900">
-                    Selamat {{ $greeting }}, {{ auth()->user()->name }}!
+                    Selamat {{ $greeting }},
+                    {{ auth()->check() && is_object(auth()->user()) ? auth()->user()->name : 'User' }}!
                 </h1>
                 <p class="text-blue-700 text-sm font-medium">
                     {{ $motivationalQuote }}
@@ -40,7 +42,7 @@
                                 d="M8 7V3a4 4 0 118 0v4m-4 0H8m4 0h4.5a2.5 2.5 0 012.5 2.5v10a2.5 2.5 0 01-2.5 2.5h-13A2.5 2.5 0 013 19.5v-10A2.5 2.5 0 015.5 7H8" />
                         </svg>
                     </div>
-                    <div class="text-2xl font-bold text-gray-900 mb-1">{{ $activeBookings }}</div>
+                    <div class="text-2xl font-bold text-gray-900 mb-1">{{ $activeBookings ?? 0 }}</div>
                     <div class="text-blue-600 text-xs font-medium uppercase tracking-wide">Active Bookings</div>
                 </div>
 
@@ -54,7 +56,7 @@
                                 d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                     </div>
-                    <div class="text-2xl font-bold text-gray-900 mb-1">{{ $attendanceRate }}<span
+                    <div class="text-2xl font-bold text-gray-900 mb-1">{{ $attendanceRate ?? 0 }}<span
                             class="text-lg">%</span></div>
                     <div class="text-blue-600 text-xs font-medium uppercase tracking-wide">Attendance Rate</div>
                 </div>
@@ -73,17 +75,19 @@
                     Jadwal Hari Ini
                 </h3>
                 <div class="space-y-4">
-                    @forelse($todaySchedule as $schedule)
-                        <div
-                            class="flex items-center justify-between p-4 bg-{{ $schedule['color'] }}-50/80 rounded-xl border border-{{ $schedule['color'] }}-100/50">
-                            <div class="flex items-center space-x-3">
-                                <div class="w-2 h-2 bg-{{ $schedule['color'] }}-500 rounded-full"></div>
-                                <span class="text-gray-900 text-sm font-medium">{{ $schedule['title'] }}</span>
+                    @if ($todaySchedule && $todaySchedule->count() > 0)
+                        @foreach ($todaySchedule as $schedule)
+                            <div
+                                class="flex items-center justify-between p-4 bg-blue-50/80 rounded-xl border border-blue-100/50">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
+                                    <span
+                                        class="text-gray-900 text-sm font-medium">{{ $schedule['title'] ?? 'Schedule Item' }}</span>
+                                </div>
+                                <span class="text-blue-700 text-sm font-medium">{{ $schedule['time'] ?? '' }}</span>
                             </div>
-                            <span
-                                class="text-{{ $schedule['color'] }}-700 text-sm font-medium">{{ $schedule['time'] }}</span>
-                        </div>
-                    @empty
+                        @endforeach
+                    @else
                         <div class="text-center py-8">
                             <svg class="w-12 h-12 text-gray-400 mx-auto mb-3" fill="none" stroke="currentColor"
                                 viewBox="0 0 24 24">
@@ -190,7 +194,7 @@
         </div>
 
         <!-- Recent Activity -->
-        @if ($recentActivity->count() > 0)
+        @if ($recentActivity && $recentActivity->count() > 0)
             <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-8 mb-8">
                 <h3 class="text-lg font-bold text-gray-900 mb-6 flex items-center">
                     <div
@@ -231,9 +235,10 @@
                                 @endif
                             </div>
                             <div class="flex-1">
-                                <p class="text-sm font-medium text-gray-900">{{ $activity['title'] }}</p>
-                                <p class="text-xs text-gray-600">{{ $activity['description'] }}</p>
-                                <p class="text-xs text-gray-500 mt-1">{{ $activity['time'] }}</p>
+                                <p class="text-sm font-medium text-gray-900">{{ $activity['title'] ?? 'Activity' }}
+                                </p>
+                                <p class="text-xs text-gray-600">{{ $activity['description'] ?? '' }}</p>
+                                <p class="text-xs text-gray-500 mt-1">{{ $activity['time'] ?? '' }}</p>
                             </div>
                         </div>
                     @endforeach
@@ -242,7 +247,7 @@
         @endif
 
         <!-- Announcements -->
-        @if ($announcements->count() > 0)
+        @if ($announcements && $announcements->count() > 0)
             <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
                 <h3 class="text-lg font-bold text-gray-900 mb-6 flex items-center">
                     <div

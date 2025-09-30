@@ -57,7 +57,8 @@
                     </a>
 
                     <!-- Dormitory Section -->
-                    @if (auth()->user()->role &&
+                    @if (auth()->check() &&
+                            auth()->user()->role &&
                             in_array(auth()->user()->role->name, ['core_team', 'admin_core_team', 'building_management']))
                         <div class="pt-6">
                             <h3 class="px-4 text-xs font-bold text-blue-700 uppercase tracking-wider mb-3">Rumah Talenta
@@ -107,7 +108,9 @@
                     @endif
 
                     <!-- Transportation Section -->
-                    @if (auth()->user()->role && in_array(auth()->user()->role->name, ['pic_shuttle', 'core_team', 'admin_core_team']))
+                    @if (auth()->check() &&
+                            auth()->user()->role &&
+                            in_array(auth()->user()->role->name, ['pic_shuttle', 'core_team', 'admin_core_team']))
                         <div class="pt-6">
                             <h3 class="px-4 text-xs font-bold text-blue-700 uppercase tracking-wider mb-3">
                                 Transportation</h3>
@@ -134,7 +137,7 @@
                     @endif
 
                     <!-- System Administration -->
-                    @if (auth()->user()->role && in_array(auth()->user()->role->name, ['admin_core_team']))
+                    @if (auth()->check() && auth()->user()->role && in_array(auth()->user()->role->name, ['admin_core_team']))
                         <div class="pt-6">
                             <h3 class="px-4 text-xs font-bold text-blue-700 uppercase tracking-wider mb-3">
                                 Administration</h3>

@@ -9,7 +9,7 @@ use App\Models\LecturerAttendance;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 
-class Dashboard extends Component
+class StudentDashboard extends Component
 {
     public $activeBookings = 0;
     public $attendanceRate = 95;
@@ -54,7 +54,11 @@ class Dashboard extends Component
     {
         $user = Auth::user();
         
-        if (!$user) {
+        if (!$user || !is_object($user) || !($user instanceof \App\Models\User)) {
+            \Log::error('StudentDashboard: Invalid user object in loadDashboardData', [
+                'user' => $user,
+                'type' => gettype($user)
+            ]);
             return;
         }
 
@@ -90,7 +94,7 @@ class Dashboard extends Component
     {
         $user = Auth::user();
         
-        if (!$user) {
+        if (!$user || !is_object($user) || !($user instanceof \App\Models\User)) {
             $this->attendanceRate = 0;
             return;
         }
@@ -128,7 +132,7 @@ class Dashboard extends Component
         $user = Auth::user();
         $notifications = 0;
         
-        if (!$user) {
+        if (!$user || !is_object($user) || !($user instanceof \App\Models\User)) {
             return 0;
         }
 
@@ -147,7 +151,7 @@ class Dashboard extends Component
         
         $this->recentActivity = collect([]);
         
-        if (!$user) {
+        if (!$user || !is_object($user) || !($user instanceof \App\Models\User)) {
             return;
         }
 
@@ -212,6 +216,16 @@ class Dashboard extends Component
             return;
         }
         
+        // Debug: Check user type
+        if (!is_object($user) || !($user instanceof \App\Models\User)) {
+            \Log::error('StudentDashboard: Invalid user object in loadTodaySchedule', [
+                'user' => $user,
+                'type' => gettype($user)
+            ]);
+            $this->todaySchedule = collect([]);
+            return;
+        }
+        
         $today = now()->toDateString();
 
         $this->todaySchedule = collect([]);
@@ -222,13 +236,20 @@ class Dashboard extends Component
             ->with('room')
             ->get()
             ->map(function ($booking) {
-                return [
-                    'title' => 'Booking ' . $booking->room->name,
-                    'time' => Carbon::parse($booking->start_time)->format('H:i') . ' - ' . Carbon::parse($booking->end_time)->format('H:i'),
-                    'type' => 'booking',
-                    'color' => 'blue'
-                ];
-            });
+                try {
+                    return [
+                        'title' => 'Booking ' . ($booking->room->name ?? 'Unknown Room'),
+                        'time' => Carbon::parse($booking->start_time)->format('H:i') . ' - ' . Carbon::parse($booking->end_time)->format('H:i'),
+                        'type' => 'booking',
+                        'color' => 'blue'
+                    ];
+                } catch (\Exception $e) {
+                    \Log::error('Error processing booking', ['booking' => $booking, 'error' => $e->getMessage()]);
+                    return null;
+                }
+            })
+            ->filter() // Remove null values
+            ->values(); // Reindex the collection
 
         // Add sample class schedule (you can replace this with actual class schedule data)
         $sampleClasses = collect([
@@ -246,14 +267,25 @@ class Dashboard extends Component
             ]
         ]);
 
-        $this->todaySchedule = $todayBookings->concat($sampleClasses)
+        // Ensure we have valid collections
+        if (!$todayBookings) {
+            $todayBookings = collect([]);
+        }
+        if (!$sampleClasses) {
+            $sampleClasses = collect([]);
+        }
+
+        $this->todaySchedule = collect($todayBookings->concat($sampleClasses)
             ->sortBy(function ($item) {
-                return substr($item['time'], 0, 5); // Sort by start time
-            });
+                $time = $item['time'] ?? '00:00';
+                return is_string($time) ? substr($time, 0, 5) : '00:00';
+            })
+            ->values()
+            ->toArray());
     }
 
     public function render()
     {
-        return view('livewire.dashboard');
+        return view('livewire.student-dashboard');
     }
 }

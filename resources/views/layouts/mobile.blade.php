@@ -286,7 +286,7 @@
                         <span class="text-gray-900">Settings</span>
                     </a>
 
-                    @if (auth()->user()->role && in_array(auth()->user()->role->name, ['core_team', 'admin_core_team']))
+                    @if (auth()->check() && auth()->user()->role && in_array(auth()->user()->role->name, ['core_team', 'admin_core_team']))
                         <a href="#"
                             class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
                             <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor"

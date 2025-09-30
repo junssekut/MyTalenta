@@ -1,4 +1,4 @@
-@extends(auth()->user()->role->name === 'student' ? 'layouts.mobile' : 'layouts.sidebar')
+@extends(auth()->check() && auth()->user()->role && auth()->user()->role->name === 'student' ? 'layouts.mobile' : 'layouts.sidebar')
 
 @php
     $greeting =
@@ -30,7 +30,7 @@
 @section('title', 'Dashboard MyTalenta')
 
 @section('content')
-    @if (auth()->user()->role->name === 'student')
+    @if (auth()->check() && auth()->user()->role && auth()->user()->role->name === 'student')
         <!-- Mobile Dashboard for Students -->
         <div class="pb-20">
             <!-- Hero Section -->
