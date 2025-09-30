@@ -81,11 +81,16 @@
                 @auth
                     <!-- Authenticated User Hero -->
                     <h2 class="text-4xl lg:text-6xl font-bold text-white mb-4 leading-tight">
-                        Selamat Datang Kembali, {{ Auth::user()->name }}
+                        Halo, {{ Auth::user()->name }}
                     </h2>
-                    <p class="text-xl lg:text-2xl text-white/90 max-w-3xl mx-auto leading-relaxed font-light">
-                        Anda adalah {{ Auth::user()->role?->display_name ?? 'Mahasiswa' }} di
-                        {{ Auth::user()->batch?->program?->name ?? 'Program' }} {{ Auth::user()->batch?->name ?? 'Batch' }}
+                    <p class="text-xl lg:text-2xl text-white/90 max-w-4xl mx-auto leading-relaxed font-light mb-2">
+                        Anda adalah {{ Auth::user()->role?->display_name ?? 'Mahasiswa' }} yang luar biasa di program
+                        {{ strtoupper(Auth::user()->batch?->program?->name ?? 'Program') }}
+                        {{ Auth::user()->batch?->name ?? 'Batch' }}
+                    </p>
+                    <p class="text-lg lg:text-xl text-white/80 max-w-3xl mx-auto leading-relaxed font-light">
+                        Bersama-sama kita wujudkan masa depan gemilang melalui pendidikan berkualitas dan pengembangan
+                        talenta unggul BCA
                     </p>
                 @else
                     <!-- Guest Hero -->
