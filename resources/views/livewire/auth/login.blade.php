@@ -40,7 +40,20 @@ new #[Layout('layouts.auth')] class extends Component {
         RateLimiter::clear($this->throttleKey());
         Session::regenerate();
 
-        redirect()->intended(route('dashboard'));
+        // Load user with relationships for proper display
+        $user = Auth::user()->load(['role', 'batch.program']);
+
+        // Check if user came from home page
+        $referer = request()->header('referer');
+        $homeUrl = route('home');
+
+        if ($referer && str_contains($referer, $homeUrl)) {
+            // User came from home page, redirect back to home
+            redirect()->to(route('home'));
+        } else {
+            // User came from elsewhere, redirect to dashboard
+            redirect()->intended(route('dashboard'));
+        }
     }
 
     /**
