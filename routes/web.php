@@ -18,10 +18,14 @@ Route::get('/', function () {
 Route::get('/attendance', AttendanceMachine::class)->name('attendance.machine');
 
 Route::view('dashboard', 'dashboard')
-    ->middleware(['auth', 'verified', 'role.layout'])
+    ->middleware(['auth', 'verified', 'role.layout', 'profile.completed'])
     ->name('dashboard');
 
-Route::middleware(['auth', 'verified'])->group(function () {
+Volt::route('profile/setup', 'auth.profile-setup')
+    ->middleware(['auth', 'verified'])
+    ->name('profile.setup');
+
+Route::middleware(['auth', 'verified', 'profile.completed'])->group(function () {
     // Dashboard modules
     Route::get('/rumah-talenta', RumahTalenta::class)
         ->name('rumah-talenta');
@@ -47,14 +51,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 // Admin routes
-Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth', 'verified', 'role:admin', 'profile.completed'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/users', \App\Livewire\Admin\Users::class)->name('users');
     Route::get('/bookings', \App\Livewire\Admin\Bookings::class)->name('bookings');
     Route::get('/reports', \App\Livewire\Admin\Reports::class)->name('reports');
     Route::get('/settings', \App\Livewire\Admin\Settings::class)->name('settings');
 });
 
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'profile.completed'])->group(function () {
     Route::redirect('settings', 'settings/profile');
 
     Volt::route('settings/profile', 'settings.profile')->name('settings.profile');

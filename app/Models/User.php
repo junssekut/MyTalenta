@@ -35,6 +35,7 @@ class User extends Authenticatable
         'emergency_contact_name',
         'emergency_contact_phone',
         'is_active',
+        'profile_completed',
     ];
 
     /**
@@ -59,6 +60,7 @@ class User extends Authenticatable
             'password' => 'hashed',
             'date_of_birth' => 'date',
             'is_active' => 'boolean',
+            'profile_completed' => 'boolean',
         ];
     }
 
