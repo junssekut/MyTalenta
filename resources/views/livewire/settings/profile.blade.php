@@ -9,6 +9,7 @@ use Livewire\Volt\Component;
 new class extends Component {
     public string $name = '';
     public string $email = '';
+    public $profilePicture;
 
     /**
      * Mount the component.
@@ -29,14 +30,7 @@ new class extends Component {
         $validated = $this->validate([
             'name' => ['required', 'string', 'max:255'],
 
-            'email' => [
-                'required',
-                'string',
-                'lowercase',
-                'email',
-                'max:255',
-                Rule::unique(User::class)->ignore($user->id)
-            ],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', Rule::unique(User::class)->ignore($user->id)],
         ]);
 
         $user->fill($validated);
@@ -48,6 +42,32 @@ new class extends Component {
         $user->save();
 
         $this->dispatch('profile-updated', name: $user->name);
+    }
+
+    /**
+     * Update the profile picture for the currently authenticated user.
+     */
+    public function updateProfilePicture(): void
+    {
+        $this->validate([
+            'profilePicture' => ['nullable', 'image', 'max:2048'], // 2MB max
+        ]);
+
+        $user = Auth::user();
+
+        if ($this->profilePicture) {
+            // Delete old profile picture if exists
+            if ($user->profile_picture) {
+                \Storage::disk('public')->delete($user->profile_picture);
+            }
+
+            // Store new profile picture
+            $path = $this->profilePicture->store('profile-pictures', 'public');
+            $user->profile_picture = $path;
+            $user->save();
+        }
+
+        $this->dispatch('profile-picture-updated');
     }
 
     /**
@@ -79,12 +99,13 @@ new class extends Component {
             <div>
                 <flux:input wire:model="email" :label="__('Email')" type="email" required autocomplete="email" />
 
-                @if (auth()->user() instanceof \Illuminate\Contracts\Auth\MustVerifyEmail &&! auth()->user()->hasVerifiedEmail())
+                @if (auth()->user() instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && !auth()->user()->hasVerifiedEmail())
                     <div>
                         <flux:text class="mt-4">
                             {{ __('Your email address is unverified.') }}
 
-                            <flux:link class="text-sm cursor-pointer" wire:click.prevent="resendVerificationNotification">
+                            <flux:link class="text-sm cursor-pointer"
+                                wire:click.prevent="resendVerificationNotification">
                                 {{ __('Click here to re-send the verification email.') }}
                             </flux:link>
                         </flux:text>
@@ -108,6 +129,48 @@ new class extends Component {
                 </x-action-message>
             </div>
         </form>
+
+        <!-- Profile Picture Section -->
+        <div class="my-6 w-full">
+            <flux:subheading>Profile Picture</flux:subheading>
+            <flux:text class="mt-1">Update your profile picture. JPG, PNG or GIF (max 2MB).</flux:text>
+
+            <form wire:submit="updateProfilePicture" class="mt-6 space-y-6">
+                <div class="flex items-center space-x-6">
+                    <!-- Current Profile Picture -->
+                    <div class="relative">
+                        @if (auth()->user()->profile_picture_url)
+                            <img src="{{ auth()->user()->profile_picture_url }}" alt="Profile Picture"
+                                class="h-24 w-24 rounded-full object-cover border-4 border-white shadow-lg">
+                        @else
+                            <div
+                                class="h-24 w-24 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center border-4 border-white shadow-lg">
+                                <span class="text-2xl font-bold text-white">{{ auth()->user()->initials() }}</span>
+                            </div>
+                        @endif
+                    </div>
+
+                    <!-- Upload Section -->
+                    <div class="flex-1">
+                        <flux:input wire:model="profilePicture" type="file" accept="image/*"
+                            label="Choose new profile picture" />
+                        <flux:text class="mt-2 text-sm text-gray-600">
+                            Recommended: Square image, at least 200x200px
+                        </flux:text>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-4">
+                    <flux:button variant="primary" type="submit">
+                        {{ __('Upload Picture') }}
+                    </flux:button>
+
+                    <x-action-message class="me-3" on="profile-picture-updated">
+                        {{ __('Profile picture updated successfully.') }}
+                    </x-action-message>
+                </div>
+            </form>
+        </div>
 
         <livewire:settings.delete-user-form />
     </x-settings.layout>

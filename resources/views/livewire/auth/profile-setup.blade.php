@@ -141,9 +141,9 @@ new class extends Component {
                                 ID Kartu (12 digit)
                             </label>
                             <div class="relative group">
-                                <input wire:model="card_id" id="card_id" type="text" autocomplete="off"
-                                    placeholder="Masukkan ID Kartu"
-                                    class="w-full pl-12 pr-4 py-4 border-2 rounded-2xl focus:ring-4 transition-all duration-300 bg-gray-50/70 focus:bg-white shadow-sm
+                                <input wire:model="card_id" id="card_id" type="text" readonly
+                                    placeholder="Klik tombol untuk scan kartu"
+                                    class="w-full pl-12 pr-32 py-4 border-2 rounded-2xl focus:ring-4 transition-all duration-300 bg-gray-50/70 focus:bg-white shadow-sm
                                         {{ $errors->has('card_id') ? 'border-red-300 focus:ring-red-100 focus:border-red-400' : 'border-gray-200 focus:ring-blue-100 focus:border-blue-400' }}
                                         group-hover:shadow-md" />
                                 <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -154,6 +154,16 @@ new class extends Component {
                                                 d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                                         </svg>
                                     </div>
+                                </div>
+                                <div class="absolute inset-y-0 right-0 pr-4 flex items-center">
+                                    <button type="button" onclick="scanCard()"
+                                        class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-xl transition-all duration-200 flex items-center space-x-2 hover:shadow-lg">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                        <span>Scan</span>
+                                    </button>
                                 </div>
                             </div>
                             @error('card_id')
@@ -394,3 +404,153 @@ new class extends Component {
         </div>
     </div>
 </div>
+
+@push('styles')
+    <style>
+        @keyframes fade-in {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes fade-out {
+            from {
+                opacity: 1;
+            }
+
+            to {
+                opacity: 0;
+            }
+        }
+
+        .animate-fade-in {
+            animation: fade-in 0.3s ease-out;
+        }
+
+        .animate-fade-out {
+            animation: fade-out 0.3s ease-in;
+        }
+    </style>
+@endpush
+
+@push('scripts')
+    <script>
+        function scanCard() {
+            // Show popup message
+            const popup = document.createElement('div');
+            popup.className =
+                'fixed inset-0 bg-gradient-to-br from-blue-900/30 via-indigo-900/40 to-blue-900/30 backdrop-blur-sm flex items-center justify-center z-50 animate-fade-in';
+            popup.innerHTML = `
+            <div class="bg-white/95 backdrop-blur-2xl rounded-3xl p-8 max-w-md mx-4 shadow-2xl border border-white/30 relative overflow-hidden">
+                <!-- Background decoration -->
+                <div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-blue-50/50 to-indigo-50/50 rounded-full -translate-y-12 translate-x-12"></div>
+                <div class="absolute bottom-0 left-0 w-20 h-20 bg-gradient-to-tr from-indigo-50/50 to-blue-50/50 rounded-full translate-y-10 -translate-x-10"></div>
+
+                <div class="relative z-10 text-center">
+                    <!-- Animated icon -->
+                    <div class="relative inline-block mb-6">
+                        <div class="absolute inset-0 bg-gradient-to-r from-blue-400 to-indigo-500 rounded-2xl blur-lg opacity-50 animate-pulse"></div>
+                        <div class="relative w-16 h-16 bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 rounded-2xl shadow-xl flex items-center justify-center">
+                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <!-- Shine effect -->
+                            <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent rounded-2xl transform -skew-x-12 animate-pulse"></div>
+                        </div>
+                    </div>
+
+                    <h3 class="text-2xl font-bold text-gray-900 mb-3 tracking-tight">Tap Your ID Card</h3>
+                    <p class="text-gray-600 mb-8 leading-relaxed">Please tap your ID card on the reader to scan</p>
+
+                    <!-- Animated scanning indicator -->
+                    <div class="mb-8 flex justify-center">
+                        <div class="relative">
+                            <div class="w-32 h-20 bg-gradient-to-r from-blue-100 to-indigo-100 rounded-xl border-2 border-blue-200 flex items-center justify-center shadow-inner">
+                                <div class="w-24 h-3 bg-gradient-to-r from-blue-400 to-indigo-500 rounded-full animate-pulse"></div>
+                            </div>
+                            <div class="absolute -top-1 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-blue-500 rounded-full animate-ping"></div>
+                        </div>
+                    </div>
+
+                    <div class="flex space-x-4">
+                        <button onclick="simulateCardScan()" class="flex-1 bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 hover:from-blue-700 hover:via-blue-800 hover:to-indigo-800 text-white font-semibold py-3 px-6 rounded-2xl shadow-xl transform hover:scale-105 hover:shadow-2xl transition-all duration-300 flex items-center justify-center space-x-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <span>Simulate Scan</span>
+                        </button>
+                        <button onclick="closePopup()" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 px-6 rounded-2xl shadow-lg transform hover:scale-105 transition-all duration-300 flex items-center justify-center space-x-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                            <span>Cancel</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+            document.body.appendChild(popup);
+        }
+
+        function simulateCardScan() {
+            // Generate a random 12-digit card ID for demo purposes
+            const cardId = Math.floor(100000000000 + Math.random() * 900000000000).toString();
+
+            // Set the card ID in the input field
+            document.getElementById('card_id').value = cardId;
+
+            // Trigger Livewire update
+            @this.set('card_id', cardId);
+
+            // Close popup
+            closePopup();
+
+            // Show success message
+            showSuccessMessage('Card scanned successfully!');
+        }
+
+        function closePopup() {
+            const popup = document.querySelector('.fixed.inset-0');
+            if (popup) {
+                popup.classList.add('animate-fade-out');
+                setTimeout(() => {
+                    if (popup.parentNode) {
+                        popup.parentNode.removeChild(popup);
+                    }
+                }, 300);
+            }
+        }
+
+        function showSuccessMessage(message) {
+            const toast = document.createElement('div');
+            toast.className =
+                'fixed top-4 right-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white px-6 py-4 rounded-2xl shadow-2xl z-50 transform translate-x-full transition-all duration-300 flex items-center space-x-3 backdrop-blur-sm border border-white/20';
+            toast.innerHTML = `
+            <svg class="w-6 h-6 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <span class="font-semibold">${message}</span>
+        `;
+            document.body.appendChild(toast);
+
+            // Animate in
+            setTimeout(() => {
+                toast.classList.remove('translate-x-full');
+            }, 100);
+
+            // Remove after 3 seconds
+            setTimeout(() => {
+                toast.classList.add('translate-x-full');
+                setTimeout(() => {
+                    if (toast.parentNode) {
+                        toast.parentNode.removeChild(toast);
+                    }
+                }, 300);
+            }, 3000);
+        }
+    </script>
+@endpush
