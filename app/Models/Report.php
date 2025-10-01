@@ -12,11 +12,13 @@ class Report extends Model
 
     protected $fillable = [
         'user_id',
+        'type',
         'title',
         'description',
         'location',
         'location_type',
         'photo_path',
+        'photos',
         'status',
         'priority',
         'response_notes',
@@ -28,6 +30,7 @@ class Report extends Model
     protected $casts = [
         'responded_at' => 'datetime',
         'is_user_satisfied' => 'boolean',
+        'photos' => 'array',
     ];
 
     public function user(): BelongsTo

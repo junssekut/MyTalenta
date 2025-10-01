@@ -11,6 +11,11 @@ class RoleSeeder extends Seeder
     {
         $roles = [
             [
+                'name' => 'admin',
+                'display_name' => 'Administrator',
+                'description' => 'Administrator sistem dengan akses penuh'
+            ],
+            [
                 'name' => 'student',
                 'display_name' => 'Mahasiswa',
                 'description' => 'Mahasiswa biasa dengan akses dasar'
@@ -63,7 +68,10 @@ class RoleSeeder extends Seeder
         ];
 
         foreach ($roles as $role) {
-            Role::create($role);
+            Role::firstOrCreate(
+                ['name' => $role['name']],
+                $role
+            );
         }
     }
 }

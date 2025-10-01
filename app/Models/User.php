@@ -34,7 +34,9 @@ class User extends Authenticatable
         'date_of_birth',
         'emergency_contact_name',
         'emergency_contact_phone',
+        'profile_picture',
         'is_active',
+        'profile_completed',
     ];
 
     /**
@@ -59,6 +61,7 @@ class User extends Authenticatable
             'password' => 'hashed',
             'date_of_birth' => 'date',
             'is_active' => 'boolean',
+            'profile_completed' => 'boolean',
         ];
     }
 
@@ -72,6 +75,16 @@ class User extends Authenticatable
             ->take(2)
             ->map(fn ($word) => Str::substr($word, 0, 1))
             ->implode('');
+    }
+
+    /**
+     * Get the user's profile picture URL
+     */
+    public function getProfilePictureUrlAttribute(): ?string
+    {
+        return $this->profile_picture
+            ? asset('storage/' . $this->profile_picture)
+            : null;
     }
 
     // Relationships

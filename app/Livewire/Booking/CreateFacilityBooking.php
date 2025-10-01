@@ -218,6 +218,8 @@ class CreateFacilityBooking extends Component
         $this->generateTimeSlots();
 
         session()->flash('message', 'Booking fasilitas berhasil dibuat!');
+        
+        return redirect()->route('dashboard')->with('success', 'Booking fasilitas berhasil dibuat!');
     }
 
     public function render()
