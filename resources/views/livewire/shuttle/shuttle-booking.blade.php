@@ -293,7 +293,7 @@
 
         <!-- Enhanced Booking Deadline Info -->
         <div
-            class="bg-gradient-to-r from-amber-50 via-yellow-50 to-orange-50 border border-amber-200 rounded-2xl p-6 mb-8 shadow-lg hover:shadow-xl transition-all duration-300">
+            class="bg-gradient-to-r from-amber-50 via-yellow-50 to-orange-50 border border-amber-200 rounded-2xl p-6 mb-8 mt-8 shadow-lg hover:shadow-xl transition-all duration-300">
             <div class="flex items-start">
                 <div class="w-12 h-12 bg-amber-500 rounded-2xl flex items-center justify-center mr-4 flex-shrink-0">
                     <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
@@ -305,8 +305,7 @@
                 <div>
                     <h3 class="text-amber-800 font-bold text-lg mb-2">🔔 Informasi Penting</h3>
                     <p class="text-amber-700 leading-relaxed">
-                        Pemesanan shuttle untuk hari <strong>Jumat</strong> ditutup pada hari <strong>Rabu jam
-                            17:00</strong>.
+                        {{ $this->bookingDeadlineInfo }}
                         Harap lakukan pemesanan sebelum batas waktu yang ditentukan untuk menghindari keterlambatan.
                     </p>
                 </div>
@@ -413,16 +412,7 @@
                         </label>
                     </div>
                 </div>
-                <div class="text-center">
-                    <svg class="w-12 h-12 mx-auto mb-3 {{ $shuttleType == 'kembali' ? 'text-green-600' : 'text-gray-400' }}"
-                        fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd"
-                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.293l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13a1 1 0 102 0V9.414l1.293 1.293a1 1 0 001.414-1.414z"
-                            clip-rule="evenodd" />
-                    </svg>
-                    <h3 class="font-semibold text-gray-900">Shuttle Kembali</h3>
-                    <p class="text-sm text-gray-600 mt-1">Dari rumah ke asrama</p>
-                </div>
+
     </div>
     </label>
 </div>
@@ -449,7 +439,7 @@
             <h2 class="text-2xl font-bold text-gray-900">Pilih Rute Tujuan</h2>
         </div>
 
-        @if (count($availableRoutes) > 0)
+        @if ($availableRoutes && count($availableRoutes) > 0)
             <div class="space-y-4">
                 @foreach ($availableRoutes as $route)
                     <label class="relative cursor-pointer group">
@@ -609,7 +599,7 @@
                 </div>
             </div>
 
-            @if ($selectedRoute && $bookingDate)
+            @if ($selectedRoute && $bookingDate && $availableRoutes)
                 @php
                     $route = $availableRoutes->where('id', $selectedRoute)->first();
                 @endphp
@@ -777,34 +767,67 @@
                         </div>
 
                         <div class="text-right ml-6">
-                            <span
-                                class="inline-flex items-center px-4 py-2 rounded-2xl text-sm font-bold
-                                        {{ $booking->status === 'confirmed'
-                                            ? 'bg-green-100 text-green-800 border border-green-200'
-                                            : ($booking->status === 'pending'
-                                                ? 'bg-yellow-100 text-yellow-800 border border-yellow-200'
-                                                : 'bg-gray-100 text-gray-800 border border-gray-200') }}">
-                                @if ($booking->status === 'confirmed')
-                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M5 13l4 4L19 7" />
-                                    </svg>
-                                @elseif ($booking->status === 'pending')
-                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
+                            <div class="space-y-2">
+                                <span
+                                    class="inline-flex items-center px-4 py-2 rounded-2xl text-sm font-bold
+                                            {{ $booking->status === 'confirmed'
+                                                ? 'bg-green-100 text-green-800 border border-green-200'
+                                                : ($booking->status === 'pending'
+                                                    ? 'bg-yellow-100 text-yellow-800 border border-yellow-200'
+                                                    : 'bg-gray-100 text-gray-800 border border-gray-200') }}">
+                                    @if ($booking->status === 'confirmed')
+                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M5 13l4 4L19 7" />
+                                        </svg>
+                                    @elseif ($booking->status === 'pending')
+                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                    @else
+                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                    @endif
+                                    {{ ucfirst($booking->status) }}
+                                </span>
+
+                                @if ($booking->approval_status === 'approved')
+                                    <div class="flex items-center justify-center">
+                                        <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor"
+                                            viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd"
+                                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                                clip-rule="evenodd" />
+                                        </svg>
+                                        <span class="text-sm font-medium text-green-700">Disetujui</span>
+                                    </div>
+                                @elseif($booking->approval_status === 'rejected')
+                                    <div class="flex items-center justify-center">
+                                        <svg class="w-4 h-4 text-red-500 mr-2" fill="currentColor"
+                                            viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd"
+                                                d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                                                clip-rule="evenodd" />
+                                        </svg>
+                                        <span class="text-sm font-medium text-red-700">Ditolak</span>
+                                    </div>
                                 @else
-                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M6 18L18 6M6 6l12 12" />
-                                    </svg>
+                                    <div class="flex items-center justify-center">
+                                        <svg class="w-4 h-4 text-yellow-500 mr-2" fill="none"
+                                            stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                        <span class="text-sm font-medium text-yellow-700">Menunggu Approval</span>
+                                    </div>
                                 @endif
-                                {{ ucfirst($booking->status) }}
-                            </span>
+                            </div>
                         </div>
                     </div>
                 </div>

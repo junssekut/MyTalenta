@@ -18,11 +18,16 @@ class ShuttleBooking extends Model
         'notes',
         'status',
         'booking_deadline',
+        'approved_by',
+        'approved_at',
+        'approval_notes',
+        'approval_status',
     ];
 
     protected $casts = [
         'travel_date' => 'date',
         'booking_deadline' => 'datetime',
+        'approved_at' => 'datetime',
     ];
 
     public function user(): BelongsTo
@@ -33,5 +38,10 @@ class ShuttleBooking extends Model
     public function shuttleRoute(): BelongsTo
     {
         return $this->belongsTo(ShuttleRoute::class);
+    }
+
+    public function approver(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'approved_by');
     }
 }

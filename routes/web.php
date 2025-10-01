@@ -7,6 +7,8 @@ use App\Livewire\Booking\CreateFacilityBooking;
 use App\Livewire\Dashboard\RumahTalenta;
 use App\Livewire\Reports\CreateFacilityReport;
 use App\Livewire\Shuttle\CreateShuttleBooking;
+use App\Livewire\Shuttle\PicShuttleDashboard;
+use App\Livewire\Shuttle\ShuttleBookingApproval;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
@@ -43,7 +45,17 @@ Route::middleware(['auth', 'verified', 'profile.completed'])->group(function () 
     // Shuttle booking
     Route::get('/shuttle/booking', CreateShuttleBooking::class)
         ->middleware(['role.layout'])
-        ->name('shuttle.booking');    // Reports
+        ->name('shuttle.booking');
+    
+    // PIC Shuttle Dashboard
+    Route::get('/shuttle/pic-dashboard', PicShuttleDashboard::class)
+        ->middleware(['role:pic_shuttle'])
+        ->name('shuttle.pic-dashboard');
+    
+    // Shuttle Booking Approval (PIC PPTI/PPBP)
+    Route::get('/shuttle/approval', ShuttleBookingApproval::class)
+        ->middleware(['role:pic_ppti,pic_ppbp'])
+        ->name('shuttle.approval');    // Reports
     Route::view('/reports/create', 'reports.create')
         ->name('reports.create');
     Route::get('/reports/facility', CreateFacilityReport::class)
